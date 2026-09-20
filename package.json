@@ -1,0 +1,25 @@
+{
+  "name": "rift-guide-jp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
+    "@types/node": "22.10.2",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "next": "^16.3.5",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.6.1"
+  }
+}

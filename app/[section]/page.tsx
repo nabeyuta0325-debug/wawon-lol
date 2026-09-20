@@ -1,0 +1,20 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+const pages = {
+  champions: { label: "チャンピオン一覧", lead: "自分に合うチャンピオンを見つけよう", text: "ロール・難易度・得意な戦い方から、あなたにぴったりのチャンピオンを探せます。", items: ["アーリ｜MID・メイジ", "ガレン｜TOP・ファイター", "リー・シン｜JG・ファイター", "ジンクス｜ADC・マークスマン", "ルル｜SUP・サポート"] },
+  roles: { label: "ロール別攻略", lead: "レーンごとの勝ち筋を知る", text: "役割ごとの基本、レーニング、集団戦での判断をわかりやすく解説します。", items: ["TOP｜孤立レーンの基礎", "JG｜ルートとガンクの判断", "MID｜ロームと主導権", "ADC｜キャリーの立ち位置", "SUP｜視界とエンゲージ"] },
+  articles: { label: "攻略記事", lead: "すぐ実践できる攻略を読む", text: "ビルド、試合運び、チャンピオンごとのコツを初心者にもわかりやすくまとめています。", items: ["LoLを始めたら最初に覚えたい10のこと", "初心者向け｜自分に合うロールの選び方", "アーリの立ち回りとコンボ", "ランクで勝つためのウェーブ管理"] },
+  beginner: { label: "初心者ガイド", lead: "はじめてのLoLを、迷わず楽しむ", text: "インストール後に何をすればいいか、用語や操作の基本から順番に案内します。", items: ["まずは知っておきたいゲームの目的", "おすすめのロールとチャンピオン", "ショップとアイテムの基礎", "初心者がつまずきやすいポイント"] },
+  "tier-list": { label: "ティアリスト", lead: "自分に合うチャンピオンを選ぶ", text: "扱いやすさ、役割、プレイスタイルをもとに、ロール別のおすすめを掲載しています。", items: ["S｜アーリ、ジャックス、ジンクス", "A｜オリアナ、ヴァイ、レオナ", "B｜ガレン、エズリアル、ルル"] },
+  glossary: { label: "用語集", lead: "LoL用語をすばやく調べる", text: "初心者がよく目にするゲーム内用語、略語、コミュニティ用語を解説します。", items: ["CS｜ミニオンを倒して得るスコア", "ガンク｜他レーンへの奇襲", "ローム｜レーンを離れて支援すること", "ビジョン｜視界情報"] },
+  search: { label: "サイト内検索", lead: "知りたいことを検索", text: "チャンピオン名、ロール、ゲーム用語から攻略コンテンツを検索できます。", items: ["チャンピオン攻略", "ロール別の基本", "おすすめビルド", "初心者ガイド"] }
+  ,about: { label: "運営者情報", lead: "RIFT NOTEについて", text: "RIFT NOTEは、League of Legendsをこれから楽しみたい方に向けた攻略情報サイトです。", items: ["サイトの目的", "記事の編集方針", "免責事項"] }
+  ,privacy: { label: "プライバシーポリシー", lead: "プライバシーポリシー", text: "当サイトでは、利用状況の分析と広告配信のためにCookieを使用することがあります。", items: ["取得する情報", "Cookieの利用", "お問い合わせ窓口"] }
+  ,contact: { label: "お問い合わせ", lead: "お問い合わせ", text: "記事の修正依頼やご意見は、運営者の連絡先からお送りください。", items: ["記事内容について", "掲載に関するご連絡", "その他のお問い合わせ"] }
+} as const;
+type Section = keyof typeof pages;
+export function generateStaticParams() { return Object.keys(pages).map((section) => ({ section })); }
+export function generateMetadata({ params }: { params: Promise<{ section: string }> }): Promise<Metadata> { return params.then(({ section }) => { const page = pages[section as Section]; return page ? { title: page.label, description: page.text, alternates: { canonical: `/${section}` } } : {}; }); }
+export default async function SectionPage({ params }: { params: Promise<{ section: string }> }) { const { section } = await params; const page = pages[section as Section]; if (!page) notFound(); const crumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "ホーム", item: "https://rift-note.jp/" }, { "@type": "ListItem", position: 2, name: page.label, item: `https://rift-note.jp/${section}` }] }; const championSlugs = ["ahri", "garen", "lee-sin", "jinx", "lulu"]; const articleSlugs = ["lol-basics-10", "choose-your-role", "ahri-guide"]; const target = (index: number) => section === "champions" ? `/champions/${championSlugs[index]}` : section === "articles" ? `/articles/${articleSlugs[index] ?? articleSlugs[0]}` : `/${section}?article=${index + 1}`; return <><header className="site-header"><Link className="brand" href="/"><span>RIFT</span> NOTE<small>LEAGUE OF LEGENDS GUIDE</small></Link><nav><Link href="/champions">チャンピオン</Link><Link href="/roles">ロール別攻略</Link><Link href="/articles">攻略記事</Link><Link href="/beginner">初心者ガイド</Link><Link href="/tier-list">ティアリスト</Link></nav></header><main><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumb) }} /><section className="inner-hero"><p className="eyebrow">RIFT NOTE / {page.label.toUpperCase()}</p><p className="breadcrumb"><Link href="/">ホーム</Link> <span>›</span> {page.label}</p><h1>{page.lead}</h1><p>{page.text}</p></section><section className="section list-page"><h2>{page.label}の記事</h2><div className="content-list">{page.items.map((item, i) => <Link href={target(i)} key={item}><span>0{i + 1}</span><strong>{item}</strong><b>→</b></Link>)}</div></section></main><footer><Link className="brand" href="/"><span>RIFT</span> NOTE</Link><small>© 2026 RIFT NOTE.</small></footer></>; }

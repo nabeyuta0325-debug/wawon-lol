@@ -1,0 +1,2 @@
+import type { MetadataRoute } from "next";
+export default function sitemap(): MetadataRoute.Sitemap { return ["", "/champions", "/roles", "/roles/top", "/roles/jungle", "/roles/mid", "/roles/adc", "/roles/sup", "/articles", "/beginner", "/tier-list", "/glossary", "/about", "/privacy", "/contact"].map((path) => ({ url: `https://rift-note.jp${path}`, lastModified: new Date(), changeFrequency: "weekly", priority: path === "" ? 1 : 0.8 })); }
